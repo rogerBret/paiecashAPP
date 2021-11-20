@@ -15,6 +15,7 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->string('IdLerex');
             $table->string('first_name');
             $table->string('last_name');
             $table->string('phone')->unique();
@@ -27,6 +28,7 @@ class CreateUsersTable extends Migration
             $table->integer('longitude')->nullable();
             $table->integer('latitude')->nullable();
             $table->string("country")->nullable();
+            $table->string("role")->nullable();
             $table->string('internalPicture')->nullable();
             $table->string('externalPicture')->nullable();
             $table->integer("user_id")->nullable()->constrained()->onUpdate("cascade")->onDelete("cascade");

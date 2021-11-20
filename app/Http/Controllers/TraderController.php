@@ -16,7 +16,14 @@ class TraderController extends Controller
      */
     public function index()
     {
-        //
+
+
+        $users = User::where("role", "trader")->get();
+
+        return response()->json([
+            "traders" => $users
+        ]);
+
     }
 
     /**
@@ -39,58 +46,58 @@ class TraderController extends Controller
             'longitude' => 'required|numeric',
             'latitude' => 'required|numeric',
             'user_id' => 'required|numeric'
-            
+
         ]);
 
-        $roleUsers = Role::get();
+        $userAPI = UsersAPI::saveUser($fields['first_name'], $fields['last_name'], $fields['phone'], $fields['email']);
 
-        foreach($roleUsers as $roleUser)
-        {
-            if($roleUser->user_id == $user)
-            {
-                $name = $roleUser->name;
+        $userRole = User::find($user);
+        if($userRole){
+            if($userRole->role == "admin" ||$userRole->role =="salesmen"){
+
+                $user = new User();
+                $user->IdLerex = $userAPI['id'];
+                $user->role = "trader";
+                $user->first_name = $request->first_name;
+                $user->last_name = $request->last_name;
+                $user->phone = $request->phone;
+                $user->email = $request->email;
+                $user->password = bcrypt($request->password);
+                $user->town_id = $request->town_id;
+                $user->structureName = $request->structureName;
+                $user->longitude = $request->longitude;
+                $user->latitude = $request->latitude;
+                $user->user_id = $request->user_id;
+                $user->save();
+                $token = $user->createToken('myapptoken')->plainTextToken;
+
+                $qrcode = $user->qrcodes()->create([
+                    "qrcode"=> mt_rand(10000000,99999999)."UserQrcode".$user->id
+                ]);
+
+
+                // $role = new Role();
+                // $role->name = "trader";
+                // $role->user_id = $user->id;
+                // $role->save();
+
+                $response = [
+                    'user' => $user,
+                    'token' => $token,
+                    'qrcode' => $qrcode,
+                    'role' => "trader"
+                ];
+
+                return response($response, 201);
+            }else{
+                return response()->json([
+                    "error"=>"sorry you don't have the permission to register a trader,please contact the administration to have a permission !"
+                ], 409);
             }
-        }
-        if($name == "admin" || $name =="salesmen"){
-            $user = User::create([
-                'first_name' => $fields['first_name'],
-                'last_name' => $fields['last_name'],
-                'phone' => $fields['phone'],
-                'email' => $fields['email'],
-                'password' => bcrypt($fields['password']),
-                'town_id' => $fields['town_id'],
-                'structureName' => $fields['structureName'],
-                'longitude' => $fields['longitude'],
-                'latitude' => $fields['latitude'],
-                'user_id'=> $fields['user_id']
-            ]);
-
-            $token = $user->createToken('myapptoken')->plainTextToken;
-            $userAPI = UsersAPI::saveUser($fields['first_name'], $fields['last_name'], $fields['phone'], $fields['email']);
-
-            $qrcode = $user->qrcodes()->create([
-                "qrcode"=> mt_rand(10000000,99999999)."UserQrcode".$user->id
-            ]);
-
-
-            $role = new Role();
-            $role->name = "trader";
-            $role->user_id = $user->id;
-            $role->save();
-
-            $response = [
-                'user' => $user,
-                'token' => $token,
-                'qrcode' => $qrcode,
-                'userAPI' => $userAPI,
-                'role' => $role
-            ];
-
-            return response($response, 201);
         }else{
             return response()->json([
-                "message"=>"sorry you don't have the permission to register a trader,please contact the administration to have a permission !"
-            ]);
+                "error"=>"plsease you must authentifier first"
+            ], 409);
         }
 
     }

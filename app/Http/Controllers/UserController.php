@@ -12,13 +12,23 @@ use Illuminate\Support\Facades\Hash;
 use SmsAPI;
 
 class UserController extends Controller
+
 {
 
+    public function simpleUsers()
+    {
+        $users = User::where("role", "user")->get();
+
+        return response()->json([
+            "users" => $users
+        ]);
+
+    }
     public function index()
     {
-        $userAPI = UsersAPI::getAll();
-        // return User::all();
-        return $userAPI;
+       return response()->json([
+        "users" =>  User::all()
+       ]);
     }
     public function register(Request $request){
 
@@ -30,34 +40,44 @@ class UserController extends Controller
             'password' => 'required|string|confirmed',
             'town_id'=>'required|numeric'
         ]);
+
+
         // $header = $request->header('Content-Type');
-
-        $user = User::create([
-            'first_name' => $fields['first_name'],
-            'last_name' => $fields['last_name'],
-            'phone' => $fields['phone'],
-            'email' => $fields['email'],
-            'town_id' => $fields[ 'town_id'],
-            'password' => bcrypt($fields['password']),
-        ]);
         $userAPI = UsersAPI::saveUser($fields['first_name'], $fields['last_name'], $fields['phone'], $fields['email']);
-        $token = $user->createToken('myapptoken')->plainTextToken;
+        // $user = User::create([
+        //     "IdLerex" => $fields['IdLerex'],
+        //     'first_name' => $fields['first_name'],
+        //     'last_name' => $fields['last_name'],
+        //     'phone' => $fields['phone'],
+        //     'email' => $fields['email'],
+        //     'town_id' => $fields[ 'town_id'],
+        //     'password' => bcrypt($fields['password']),
+        // ]);
+        $user = new User();
+        $user->IdLerex = $userAPI['id'];
+        $user->role = "user";
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->phone = $request->phone;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password);
+        $user->town_id = $request->town_id;
+        $user->save();
 
+        $token = $user->createToken('myapptoken')->plainTextToken;
         $qrcode = $user->qrcodes()->create([
             "qrcode"=> mt_rand(10000000,99999999)."UserQrcode".$user->id
         ]);
 
-        $role = new Role();
-        $role->name = "user";
-        $role->user_id = $user->id;
-        $role->save();
-
+        // $role = new Role();
+        // $role->name = "user";
+        // $role->user_id = $user->id;
+        // $role->save();
 
         $response = [
             'user' => $user,
-            'userAPI' => $userAPI,
             'token' => $token,
-            'role' => $role,
+            'role' => "user",
             'qrcode' => $qrcode
         ];
 
@@ -100,9 +120,10 @@ class UserController extends Controller
         ];
     }
     public function show($userId){
-        // return User::find($id);
+
+        $user = User::find($userId);
         return response()->json([
-            "userAPI" => UsersAPI::get($userId)
+            "user" => $user
         ]);
     }
     public function update(Request $request, $id)
@@ -111,29 +132,29 @@ class UserController extends Controller
         $user->update($request->all());
 
         $fields = $request->validate([
-            'id'=>'required|string',
+            'IdLerex'=>'required|string',
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'phone' => 'required|numeric',
             'email' => 'required|string',
         ]);
 
-        $userAPI = UsersAPI::update($fields['id'], $fields['first_name'], $fields['last_name'], $fields['phone'], $fields['email']);
+        UsersAPI::update($fields['IdLerex'], $fields['first_name'], $fields['last_name'], $fields['phone'], $fields['email']);
 
         return response()->json([
             "message"=>"user updated successfully !",
-            "UserAPI"=>$userAPI], 409);
+            "user"=>$user], 409);
     }
     public function destroy($userId)
     {
-        $userAPI = UsersAPI::get($userId);
-        User::where("email", $userAPI['email'])->delete();
-        UsersAPI::delete($userId);
+         UsersAPI::get($userId);
+        //  User::where("email", $userAPI['email'])->delete();
+         UsersAPI::delete($userId);
 
         // return User::destroy($id);
 
         return response()->json([
-            "message" => "User deleted successfully"
+            "message" => "User deleted successfully !"
         ]);
     }
     public function sendPinToUser(){

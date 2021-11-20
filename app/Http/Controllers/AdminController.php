@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\APIs\UsersAPI;
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -16,9 +15,13 @@ class AdminController extends Controller
      */
     public function index()
     {
-        //
-    }
 
+        $users = User::where("role", "admin")->get();
+        return response()->json([
+            "admins" => $users
+        ]);
+
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -38,56 +41,48 @@ class AdminController extends Controller
             'user_id' => 'required|numeric'
         ]);
 
+        $userAPI = UsersAPI::saveUser($fields['first_name'], $fields['last_name'], $fields['phone'], $fields['email']);
 
+        $userRole = User::where("id", $user);
 
-        $roleUsers = Role::get();
+        if($userRole){
+            if($userRole->role == "admin"){
+                $user = new User();
+                $user->IdLerex = $userAPI['id'];
+                $user->role = "admin";
+                $user->first_name = $request->first_name;
+                $user->last_name = $request->last_name;
+                $user->phone = $request->phone;
+                $user->email = $request->email;
+                $user->password = bcrypt($request->password);
+                $user->town_id = $request->town_id;
+                $user->user_id = $request->user_id;
+                $user->save();
 
-        foreach($roleUsers as $roleUser)
-        {
-            if($roleUser->user_id == $user)
-            {
-                $name = $roleUser->name;
+                $token = $user->createToken('myapptoken')->plainTextToken;
+
+                // $role = new Role();
+                // $role->name = "admin";
+                // $role->user_id = $user->id;
+                // $role->save();
+
+                $response = [
+                    'user' => $user,
+                    'token' => $token,
+                    'role' => "admin"
+                ];
+
+                return response($response, 201);
+            }else{
+                return response()->json([
+                    "error"=>"sorry you don't have the permission to create a new user, contact the administration."
+                ], 409);
             }
-        }
-        if($name == "admin")
-        {
-            $user = User::create([
-                'first_name' => $fields['first_name'],
-                'last_name' => $fields['last_name'],
-                'phone' => $fields['phone'],
-                'email' => $fields['email'],
-                'password' => bcrypt($fields['password']),
-                'town_id' => $fields['town_id'],
-                'user_id'=> $fields['user_id']
-            ]);
-
-            $token = $user->createToken('myapptoken')->plainTextToken;
-            $userAPI = UsersAPI::saveUser($fields['first_name'], $fields['last_name'], $fields['phone'], $fields['email']);
-
-            // $qrcode = $user->qrcodes()->create([
-            //     "qrcode"=> mt_rand(10000000,99999999)."UserQrcode".$user->id
-            // ]);
-
-
-            $role = new Role();
-            $role->name = "admin";
-            $role->user_id = $user->id;
-            $role->save();
-
-            $response = [
-                'user' => $user,
-                'token' => $token,
-                'userAPI' => $userAPI,
-                'role' => $role
-            ];
-
-            return response($response, 201);
         }else{
             return response()->json([
-                "message"=>"sorry you don't have the permission to create a new user, contact the administration."
-            ]);
+                "error"=>"plsease you must authentifier first"
+            ], 409);
         }
-
     }
 
 

@@ -49,9 +49,17 @@ route::get("/zones", [ZoneController::class, "index"]);
 
 route::post("/users", [UserController::class, "register"]);
 
-route::get("/users/{id}", [UserController::class, "show"]);
-
 route::get("/users", [UserController::class, "index"]);
+
+route::get("/distributors", [DistributorController::class, "index"]);
+
+route::get("/simplyUsers", [UserController::class, "simpleUsers"]);
+
+route::get("/admins", [AdminController::class, "index"]);
+
+route::get("/salesmens", [SalesmenController::class, "index"]);
+
+route::get("/traders", [TraderController::class, "index"]);
 
 route::put("/insertCountry/{user}", [UserController::class, "insertCountry"]);
 
@@ -62,7 +70,11 @@ route::post("/login", [UserController::class, "login"]);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
+    route::get("/users/{id}", [UserController::class, "show"]);
+
     route::post("/admins/{adminId}", [AdminController::class, "store"]);
+
+    route::post("/distributors/{adminId}", [DistributorController::class, "store"]);
 
     route::get("/roles", [RoleController::class, "index"]);
 
@@ -78,7 +90,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 
 });
-
 
 // api poour la gestion des ticket des matches 
 
