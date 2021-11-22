@@ -11,9 +11,44 @@ class ServiceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    /**
+     * @OA\Get(
+     *      path="/services",
+     *      operationId="getAllServices",
+     *      tags={"Les Services offerts"},
+
+     *      summary="Retourne  la liste des service",
+     *      description="Retourne tout les services",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     * @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *  )
+     */
     public function index()
     {
-        //
+        $appli = App::paginate(10);
+
+        return AppResource::collection($appli);
     }
 
     /**
@@ -21,6 +56,73 @@ class ServiceController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
+     */
+
+      /**
+     * @OA\POST(
+     *      path="/service",
+     *      operationId="createService",
+     *      tags={"Les Services offerts"},
+
+     *      summary="crée un nouveau service",
+     *      description="Crée un service",
+     *      @OA\Parameter(
+     *      name="serviceName",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     * @OA\Parameter(
+     *      name="tarification",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="int"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="price",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="int"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="id_app",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="int"
+     *      )
+     * ),
+     *
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     * @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *  )
      */
     public function store(Request $request)
     {
@@ -32,6 +134,48 @@ class ServiceController extends Controller
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
+     */
+
+     /**
+     * @OA\GET(
+     *      path="/service/{id}",
+     *      operationId="showService",
+     *      tags={"Les Services offerts"},
+
+     *      summary="Visualiser un service",
+     *      description="Permet de visualiser un service",
+     *   @OA\Parameter(
+     *      name="id",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="int"
+     *      )
+     *   ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     * @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *  )
      */
     public function show($id)
     {
@@ -45,6 +189,80 @@ class ServiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+     /**
+     * @OA\PUT(
+     *      path="/service/{id}",
+     *      operationId="updateService",
+     *      tags={"Les Services offerts"},
+
+     *      summary="Mettre à jour un service",
+     *      description="Mettre à jour un service",
+    *      @OA\Parameter(
+     *      name="id",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="int"
+     *      )
+     *   ),
+    *      @OA\Parameter(
+     *      name="serviceName",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     * @OA\Parameter(
+     *      name="facturation",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="int"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="price",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="id"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="id_app",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="int"
+     *      )
+     * ),
+     * 
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     * @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *  )
+     */
     public function update(Request $request, $id)
     {
         //
@@ -55,6 +273,48 @@ class ServiceController extends Controller
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
+     */
+
+     /**
+     * @OA\DELETE(
+     *      path="/service/{id}",
+     *      operationId="deleteService",
+     *      tags={"Les Services offerts"},
+
+     *      summary="Supression de services",
+     *      description="Supression d'un service",
+     *   @OA\Parameter(
+     *      name="id",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="int"
+     *      )
+     *   ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     * @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *  )
      */
     public function destroy($id)
     {

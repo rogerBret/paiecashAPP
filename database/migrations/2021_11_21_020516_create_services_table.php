@@ -15,6 +15,16 @@ class CreateServicesTable extends Migration
     {
         Schema::create('services', function (Blueprint $table) {
             $table->id();
+            $table->string('serviceName');
+            $table->string('status');
+            $table->string('tarificationMode');
+            $table->integer('price');
+            $table->foreignId('id_app')->constrained();
+            $table->foreign('id_app')
+            ->references('id')
+            ->on('apps')
+            ->onDelete('cascade')
+            ->onUpdate('cascade');
             $table->timestamps();
         });
     }

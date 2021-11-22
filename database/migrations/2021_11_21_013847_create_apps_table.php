@@ -19,7 +19,12 @@ class CreateAppsTable extends Migration
             $table->string('userAccount')->unique();
             $table->string('costomersId')->unique();
             $table->string('appSecreteCode')->unique();
-            $table->
+            $table->foreignId('user_account_id')->constrained();
+            $table->foreign('user_account_id')
+            ->references('id')
+            ->on('user_accounts')
+            ->onDelete('cascade')
+            ->onUpdate('cascade');
             $table->timestamps();
         });
     }

@@ -14,6 +14,15 @@ class ServiceResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        // return parent::toArray($request);
+
+        return[
+
+            'id' => $this->id,
+            'serviceName' => $this->serviceName,
+            'facturation' => $this->facturation,
+            'price'=> $this->price,
+            'id_app' => $this->id_app
+        ];
     }
 }

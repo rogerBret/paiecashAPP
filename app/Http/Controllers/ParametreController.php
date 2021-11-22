@@ -2,20 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CategoriesPlaceResource;
-use App\Models\CategoriPlace;
+use App\Http\Resources\ParametreResource;
+use App\Models\Parametre;
 use Illuminate\Http\Request;
 
-class CategoriesPlaceController extends Controller
+class ParametreController extends Controller
 {
     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    /**
      * @OA\Get(
-     *      path="/categories-places",
-     *      operationId="getAllCategoriesSeat",
-     *      tags={"Catégoried de places dans un stade"},
+     *      path="/apps",
+     *      tags={"Les applications partenaires"},
 
-     *      summary="Retourne  la liste des catégories des places",
-     *      description="Retourne toutes les catégories de places dans un stade. Lors de l'utilisation une variable $category est retourné contenant les données",
+     *      summary="Retourne  la liste des application utilisant notre solution",
+     *      description="Retourne toutes les application ayant souscrit à notre mode de paiement",
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -41,13 +45,11 @@ class CategoriesPlaceController extends Controller
      *   ),
      *  )
      */
-
-    
     public function index()
     {
-        $category = CategoriPlace::paginate(10);
+        $parametre = Parametre::paginate(10);
 
-        return CategoriesPlaceResource::collection($category);
+        return ParametreResource::collection($parametre);
     }
 
     /**
@@ -56,16 +58,17 @@ class CategoriesPlaceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    /**
-     * @OA\POST(
-     *      path="/categories-place",
-     *      operationId="createCategoriesSeat",
-     *      tags={"Catégoried de places dans un stade"},
 
-     *      summary="crée une nouvelle catégorie de place",
-     *      description="Crée une catégorie de place dans in stade donné",
+      /**
+     * @OA\POST(
+     *      path="/parametre-app",
+     *      operationId="createParameter",
+     *      tags={"Les parametre App"},
+
+     *      summary="crée un nouveau parametre",
+     *      description="Crée des parametre pour les applications qui vellent souscrire à l'api paiecash",
      *      @OA\Parameter(
-     *      name="name",
+     *      name="urlReturn",
      *      in="path",
      *      required=true,
      *      @OA\Schema(
@@ -73,7 +76,31 @@ class CategoriesPlaceController extends Controller
      *      )
      *   ),
      * @OA\Parameter(
-     *      name="stade_id",
+     *      name="acceptePaiement",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="billing",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="litigeManagement",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="paiementCard",
      *      in="path",
      *      required=true,
      *      @OA\Schema(
@@ -81,7 +108,31 @@ class CategoriesPlaceController extends Controller
      *      )
      * ),
      * @OA\Parameter(
-     *      name="place_id",
+     *      name="paiementHistry",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="int"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="id_paiement_mode",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="int"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="id_service",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="int"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="id_app",
      *      in="path",
      *      required=true,
      *      @OA\Schema(
@@ -116,20 +167,32 @@ class CategoriesPlaceController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'name' => 'request|string',
-            'stade_id' => 'request|integer',
-            'place_id' => 'request|integer'
+            'urlReturn' => 'required',
+            'acceptePaiement' => 'required',
+            'billing' => 'required',
+            'litigeManagement' => 'required',
+            'paiementCard' => 'required',
+            'paiementHistry' => 'required',
+            'id_paiement_mode' => 'required',
+            'id_app' => 'required',
+            'id_service' => 'required',
         ]);
 
-        $category = new CategoriPlace();
+        $parametre = new Parametre();
+        $parametre->urlReturn = $request->urlReturn;
+        $parametre->acceptePaiement = $request->acceptePaiement;
+        $parametre->billing = $request->billing;
+        $parametre->litigeManagement = $request->litigeManagement;
+        $parametre->paiementCard = $request->paiementCard;
+        $parametre->paiementHistry = $request->paiementHistry;
+        $parametre->id_paiement_mode = $request->id_paiement_mode;
+        $parametre->id_app = $request->id_app;
+        $parametre->id_service = $request->id_service;
 
-        $category->name = $request->name;
-        $category->stade_id = $request->stade_id;
-        $category->place_id = $request->place_id;
+        $parametre->save();
 
-        $category->save();
+        return new ParametreResource($parametre);
 
-        return new  CategoriesPlaceResource($category);
     }
 
     /**
@@ -138,20 +201,21 @@ class CategoriesPlaceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    /**
-     * @OA\GET(
-     *      path="/categories-place/{id}",
-     *      operationId="showCategoriesSeat",
-     *      tags={"Catégoried de places dans un stade"},
 
-     *      summary="Visualiser une catégorie",
-     *      description="Permet de visualiser une catégorie donné",
+     /**
+     * @OA\GET(
+     *      path="/parametre-app/{id}",
+     *      operationId="showParameters",
+     *      tags={"Les parametre App"},
+
+     *      summary="Visualiser parameter",
+     *      description="Permet de visualiser des parametres donnés",
      *   @OA\Parameter(
      *      name="id",
      *      in="path",
      *      required=true,
      *      @OA\Schema(
-     *           type="string"
+     *           type="int"
      *      )
      *   ),
      *      @OA\Response(
@@ -181,9 +245,9 @@ class CategoriesPlaceController extends Controller
      */
     public function show($id)
     {
-        $category = CategoriPlace::findOrFail($id);
+        $parametre= Parametre::findOrFail($id);
 
-        return new CategoriesPlaceResource($category);
+        return new ParametreResource($parametre);
     }
 
     /**
@@ -193,16 +257,15 @@ class CategoriesPlaceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-
      /**
      * @OA\PUT(
-     *      path="/categories-place/{id}",
-     *      operationId="createCategoriesSeat",
-     *      tags={"Catégoried de places dans un stade"},
+     *      path="/parametre-app/{id}",
+     *      operationId="updateParameter",
+     *      tags={"Les parametre App"},
 
-     *      summary="Mettre à jour une catégorie de place",
-     *      description="Mettre à jour une catégorie de place dans in stade donné",
-     *        @OA\Parameter(
+     *      summary="Mettre à jour les paramertres",
+     *      description="Mettre à jour les parametres",
+    *      @OA\Parameter(
      *      name="id",
      *      in="path",
      *      required=true,
@@ -210,8 +273,8 @@ class CategoriesPlaceController extends Controller
      *           type="int"
      *      )
      *   ),
-     *        @OA\Parameter(
-     *      name="name",
+    *      @OA\Parameter(
+     *      name="urlReturn",
      *      in="path",
      *      required=true,
      *      @OA\Schema(
@@ -219,7 +282,47 @@ class CategoriesPlaceController extends Controller
      *      )
      *   ),
      * @OA\Parameter(
-     *      name="stade_id",
+     *      name="acceptePaiement",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="billing",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="litigeManagement",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="paiementCard",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="paiementHistry",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="id_paiement_mode",
      *      in="path",
      *      required=true,
      *      @OA\Schema(
@@ -227,7 +330,15 @@ class CategoriesPlaceController extends Controller
      *      )
      * ),
      * @OA\Parameter(
-     *      name="place_id",
+     *      name="id_service",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="int"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="id_app",
      *      in="path",
      *      required=true,
      *      @OA\Schema(
@@ -261,21 +372,7 @@ class CategoriesPlaceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
-            'name' => 'request|string',
-            'stade_id' => 'request|integer',
-            'place_id' => 'request|integer'
-        ]);
-
-        $category = CategoriPlace::findOrFail($id);
-
-        $category->name = $request->name;
-        $category->stade_id = $request->stade_id;
-        $category->place_id = $request->place_id;
-
-        $category->save();
-
-        return new  CategoriesPlaceResource($category);
+        //
     }
 
     /**
@@ -284,15 +381,16 @@ class CategoriesPlaceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
      /**
      * @OA\DELETE(
-     *      path="/categories-place/{id}",
-     *      operationId="showCategoriesSeat",
-     *      tags={"Catégoried de places dans un stade"},
+     *      path="/parametre-app/{id}",
+     *      operationId="deleteParametre",
+     *      tags={"Les parametre App"},
 
-     *      summary="Suprimer une catégory",
-     *      description="Permet de supprimer une catégorie donné",
-     *      @OA\Parameter(
+     *      summary="Supression du parametre",
+     *      description="Supression d'un parametre'  donné",
+     *   @OA\Parameter(
      *      name="id",
      *      in="path",
      *      required=true,
@@ -327,10 +425,6 @@ class CategoriesPlaceController extends Controller
      */
     public function destroy($id)
     {
-       $category = CategoriPlace::findOrFail($id);
-
-       $category->delete();
-
-       return new CategoriesPlaceResource($category);
+        //
     }
 }

@@ -14,6 +14,12 @@ class PaiementmodeResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        // return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'singlePaiement'=> $this->singlePaiement,
+            'paiementGroup' => $this->paiementGroup,
+            'id_parametre' => $this->id_parametre
+        ];
     }
 }

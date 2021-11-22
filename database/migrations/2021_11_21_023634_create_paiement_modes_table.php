@@ -15,6 +15,14 @@ class CreatePaiementModesTable extends Migration
     {
         Schema::create('paiement_modes', function (Blueprint $table) {
             $table->id();
+            $table->boolean('singlePaiement');
+            $table->boolean('paiementGroup');
+            $table->foreignId('id_parametre')->constrained();
+            $table->foreign('id_parametre')
+            ->references('id')
+            ->on('parametres')
+            ->onDelete('cascade')
+            ->onUpdate('cascade');
             $table->timestamps();
         });
     }

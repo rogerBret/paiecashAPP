@@ -15,6 +15,20 @@ class CreateFacturationsTable extends Migration
     {
         Schema::create('facturations', function (Blueprint $table) {
             $table->id();
+            $table->string('type');
+            $table->integer('price');
+            $table->foreignId('id_service')->constrained();
+            $table->foreign('id_service')
+            ->references('id')
+            ->on('services')
+            ->onDelete('cascade')
+            ->onUpdate('cascade');
+            $table->foreignId('id_app')->constrained();
+            $table->foreign('id_app')
+            ->references('id')
+            ->on('apps')
+            ->onDelete('cascade')
+            ->onUpdate('cascade');
             $table->timestamps();
         });
     }
