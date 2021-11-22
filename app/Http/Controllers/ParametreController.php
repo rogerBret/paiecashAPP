@@ -16,6 +16,7 @@ class ParametreController extends Controller
     /**
      * @OA\Get(
      *      path="/apps",
+     *      operationId="getAllApps",
      *      tags={"Les applications partenaires"},
 
      *      summary="Retourne  la liste des application utilisant notre solution",

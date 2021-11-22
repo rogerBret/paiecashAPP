@@ -46,9 +46,7 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $appli = App::paginate(10);
-
-        return AppResource::collection($appli);
+        
     }
 
     /**
