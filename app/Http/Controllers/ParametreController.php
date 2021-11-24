@@ -373,7 +373,32 @@ class ParametreController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'urlReturn' => 'required',
+            'acceptePaiement' => 'required',
+            'billing' => 'required',
+            'litigeManagement' => 'required',
+            'paiementCard' => 'required',
+            'paiementHistry' => 'required',
+            'id_paiement_mode' => 'required',
+            'id_app' => 'required',
+            'id_service' => 'required',
+        ]);
+
+        $parametre =  Parametre::findOrFail($id);
+        $parametre->urlReturn = $request->urlReturn;
+        $parametre->acceptePaiement = $request->acceptePaiement;
+        $parametre->billing = $request->billing;
+        $parametre->litigeManagement = $request->litigeManagement;
+        $parametre->paiementCard = $request->paiementCard;
+        $parametre->paiementHistry = $request->paiementHistry;
+        $parametre->id_paiement_mode = $request->id_paiement_mode;
+        $parametre->id_app = $request->id_app;
+        $parametre->id_service = $request->id_service;
+
+        $parametre->save();
+
+        return new ParametreResource($parametre);
     }
 
     /**
@@ -426,6 +451,10 @@ class ParametreController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $parametre = Parametre::findOrFail($id);
+
+        $parametre->delete();
+
+        return new ParametreResource($parametre);
     }
 }

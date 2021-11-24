@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ServiceResource;
+use App\Models\Service;
 use Illuminate\Http\Request;
+use OpenApi\Annotations\Server;
 
 class ServiceController extends Controller
 {
@@ -46,7 +49,9 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        
+        $service = Service::paginate(10);
+
+        return ServiceResource::collection($service);
     }
 
     /**
@@ -124,7 +129,23 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'serviceName' => 'required|string',
+            'facturation' => 'required|string',
+            'price' => 'required|integer',
+            'id_app' => 'required|integer',
+        ]);
+
+        $service = new Service();
+
+        $service->seviceName = $request->serviceName;
+        $service->facturation = $request->facturation;
+        $service->price = $request->price;
+        $service->id_app = $request->id_app;
+
+        $service->save();
+
+        return new ServiceResource($service);
     }
 
     /**
@@ -177,7 +198,10 @@ class ServiceController extends Controller
      */
     public function show($id)
     {
-        //
+        $service = Service::findOrFail($id);
+
+        return new ServiceResource($service);
+
     }
 
     /**
@@ -263,7 +287,23 @@ class ServiceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'serviceName' => 'required|string',
+            'facturation' => 'required|string',
+            'price' => 'required|integer',
+            'id_app' => 'required|integer',
+        ]);
+
+        $service =  Service::findOrFail($id);
+
+        $service->seviceName = $request->serviceName;
+        $service->facturation = $request->facturation;
+        $service->price = $request->price;
+        $service->id_app = $request->id_app;
+
+        $service->save();
+
+        return new ServiceResource($service);
     }
 
     /**
@@ -316,6 +356,11 @@ class ServiceController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $service = Service::findOrFail($id);
+
+        $service->delete();
+
+        return new ServiceResource($service);
+
     }
 }

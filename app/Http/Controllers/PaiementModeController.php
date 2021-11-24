@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PaiementmodeResource;
+use App\Models\PaiementMode;
 use Illuminate\Http\Request;
 
 class PaiementModeController extends Controller
@@ -46,7 +48,9 @@ class PaiementModeController extends Controller
      */
     public function index()
     {
-       
+       $paiementM = PaiementMode::paginate(10);
+
+       return PaiementmodeResource::collection($paiementM);
     }
 
     /**
@@ -116,7 +120,21 @@ class PaiementModeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'singlePaiement' => 'request|string',
+            'paiementGroup' => 'request|string',
+            'id_parameter' => 'request|integer',
+        ]);
+
+        $paiementM = new PaiementMode();
+
+        $paiementM->singlePaiement = $request->singlePaiement;
+        $paiementM->paiementGroup = $request->paiementGroup;
+        $paiementM->id_parametrer = $request->id_parameter;
+
+        $paiementM->save();
+
+        return new PaiementmodeResource($paiementM);
     }
 
     /**
@@ -169,7 +187,9 @@ class PaiementModeController extends Controller
      */
     public function show($id)
     {
-        //
+        $paiementM = PaiementMode::findOrFail($id);
+
+        return new PaiementmodeResource($paiementM);
     }
 
     /**
@@ -247,7 +267,21 @@ class PaiementModeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'singlePaiement' => 'request|string',
+            'paiementGroup' => 'request|string',
+            'id_parameter' => 'request|integer',
+        ]);
+
+        $paiementM =  PaiementMode::findOrFail($id);
+
+        $paiementM->singlePaiement = $request->singlePaiement;
+        $paiementM->paiementGroup = $request->paiementGroup;
+        $paiementM->id_parametrer = $request->id_parameter;
+
+        $paiementM->save();
+
+        return new PaiementmodeResource($paiementM);
     }
 
     /**
@@ -300,6 +334,8 @@ class PaiementModeController extends Controller
      */
     public function destroy($id)
     {
-        //
+       $paiementM = PaiementMode::findOrFail($id);
+
+       return new PaiementmodeResource($paiementM);
     }
 }

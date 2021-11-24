@@ -135,7 +135,25 @@ class AppController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'appName' => 'request|string',
+            'userAccounte' => 'request|string',
+            'costomersId' => 'request|string',
+            'appSecreteCode' => 'request|string',
+            'user_accounte_id' => 'request|string'
+        ]);
+
+        $appli = new App();
+
+        $appli->appName = $request->appName;
+        $appli->userAccounte = $request->userAccounte;
+        $appli->costomersId = $request->costomersId;
+        $appli->appSecreteCode = $request->appSecreteCode;
+        $appli->user_accounte_id = $request->user_accounte_id;
+
+        $appli->save();
+
+        return new AppResource($appli);
     }
 
     /**
@@ -188,7 +206,9 @@ class AppController extends Controller
      */
     public function show($id)
     {
-        //
+        $appli = App::findOrFail($id);
+
+        return new AppResource($appli);
     }
 
     /**
@@ -281,7 +301,25 @@ class AppController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'appName' => 'request|string',
+            'userAccounte' => 'request|string',
+            'costomersId' => 'request|string',
+            'appSecreteCode' => 'request|string',
+            'user_accounte_id' => 'request|string'
+        ]);
+
+        $appli = App::findOrFail($id);
+
+        $appli->appName = $request->appName;
+        $appli->userAccounte = $request->userAccounte;
+        $appli->costomersId = $request->costomersId;
+        $appli->appSecreteCode = $request->appSecreteCode;
+        $appli->user_accounte_id = $request->user_accounte_id;
+
+        $appli->save();
+
+        return new AppResource($appli);
     }
 
     /**
@@ -334,10 +372,33 @@ class AppController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $appli = App::findOrFail($id);
+        $appli->delete();
+        return new AppResource($appli);
     }
 
-    public function generLing(){
-        
+    public function generLink(){
+
+    }
+
+
+    public function genereCostomersId($length=32){
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $costomersId = '';
+        for ($i = 0; $i < $length; $i++) {
+            $costomersId .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $costomersId;
+    }
+
+    public function genereAppSecreteCode($length =64){
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $appSecreteCode = '';
+        for ($i = 0; $i < $length; $i++) {
+            $appSecreteCode .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $appSecreteCode;
     }
 }
