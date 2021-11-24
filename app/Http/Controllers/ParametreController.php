@@ -15,9 +15,9 @@ class ParametreController extends Controller
      */
     /**
      * @OA\Get(
-     *      path="/apps",
-     *      operationId="getAllApps",
-     *      tags={"Les applications partenaires"},
+     *      path="/parametre-apps",
+     *      operationId="getAllParameterApps",
+     *      tags={"parametre App"},
 
      *      summary="Retourne  la liste des parametres des application",
      *      description="Retourne toutes les parametres d'application api ",
