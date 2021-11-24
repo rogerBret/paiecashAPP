@@ -1,14 +1,19 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AppController;
 use App\Http\Controllers\CategoriesPlaceController;
 use App\Http\Controllers\CountryController;
+use App\Http\Controllers\FacturationController;
 use App\Http\Controllers\MatchController;
+use App\Http\Controllers\PaiementModeController;
+use App\Http\Controllers\ParametreController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SalesmenController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StadeController;
 use App\Http\Controllers\Subscription_typeController;
 use App\Http\Controllers\SubscriptionController;
@@ -132,3 +137,39 @@ Route::post('/ticket', [TicketController::class, "store"]);
 Route::get('/ticket/{id}', [TicketController::class, "show"]);
 Route::put('/ticket/{id}', [TicketController::class, "update"]);
 Route::delete('/ticket/{id}', [TicketController::class, "destroy"]);
+
+/* ***************gestion des souscription au mode de paiement avec paiecash ************* */
+
+
+Route::get('apps', [AppController::class, "index"]);
+Route::post('app', [AppController::class, "store"]);
+Route::get('app/{id}', [AppController::class, "show"]);
+Route::put('app/{id}', [AppController::class, "update"]);
+Route::delete('app/{id}', [AppController::class, "destroy"]);
+
+Route::get('services', [ServiceController::class, "index"]);
+Route::post('service', [ServiceController::class, "store"]);
+Route::get('service/{id}', [ServiceController::class, "show"]);
+Route::put('service/{id}', [ServiceController::class, "update"]);
+Route::delete('service/{id}', [ServiceController::class, "destroy"]);
+
+
+Route::get('mode-paiements', [PaiementModeController::class, "index"]);
+Route::post('mode-paiement', [PaiementModeController::class, "store"]);
+Route::get('mode-paiement/{id}', [PaiementModeController::class, "show"]);
+Route::put('mode-paiement/{id}', [PaiementModeController::class, "update"]);
+Route::delete('mode-paiement/{id}', [PaiementModeController::class, "destroy"]);
+
+
+Route::get('parametre-apps', [ParametreController::class, "index"]);
+Route::post('parametre-app', [ParametreController::class, "store"]);
+Route::get('parametre-app/{id}', [ParametreController::class, "show"]);
+Route::put('parametre-app/{id}', [ParametreController::class, "update"]);
+Route::delete('parametre-app/{id}', [ParametreController::class, "destroy"]);
+
+
+Route::get('facturations', [FacturationController::class, "index"]);
+Route::post('facturation', [FacturationController::class, "store"]);
+Route::get('facturation/{id}', [FacturationController::class, "show"]);
+Route::put('facturation/{id}', [FacturationController::class, "update"]);
+Route::delete('facturation/{id}', [FacturationController::class, "destroy"]);

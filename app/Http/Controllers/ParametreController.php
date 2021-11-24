@@ -19,9 +19,10 @@ class ParametreController extends Controller
      *      operationId="getAllApps",
      *      tags={"Les applications partenaires"},
 
-     *      summary="Retourne  la liste des application utilisant notre solution",
-     *      description="Retourne toutes les application ayant souscrit à notre mode de paiement",
-     *      @OA\Response(
+     *      summary="Retourne  la liste des parametres des application",
+     *      description="Retourne toutes les parametres d'application api ",
+     *    
+     *       @OA\Response(
      *          response=200,
      *          description="Successful operation",
      *          @OA\MediaType(
@@ -64,7 +65,7 @@ class ParametreController extends Controller
      * @OA\POST(
      *      path="/parametre-app",
      *      operationId="createParameter",
-     *      tags={"Les parametre App"},
+     *      tags={"parametre App"},
 
      *      summary="crée un nouveau parametre",
      *      description="Crée des parametre pour les applications qui vellent souscrire à l'api paiecash",
@@ -207,7 +208,7 @@ class ParametreController extends Controller
      * @OA\GET(
      *      path="/parametre-app/{id}",
      *      operationId="showParameters",
-     *      tags={"Les parametre App"},
+     *      tags={"parametre App"},
 
      *      summary="Visualiser parameter",
      *      description="Permet de visualiser des parametres donnés",
@@ -262,7 +263,7 @@ class ParametreController extends Controller
      * @OA\PUT(
      *      path="/parametre-app/{id}",
      *      operationId="updateParameter",
-     *      tags={"Les parametre App"},
+     *      tags={"parametre App"},
 
      *      summary="Mettre à jour les paramertres",
      *      description="Mettre à jour les parametres",
@@ -412,7 +413,7 @@ class ParametreController extends Controller
      * @OA\DELETE(
      *      path="/parametre-app/{id}",
      *      operationId="deleteParametre",
-     *      tags={"Les parametre App"},
+     *      tags={"parametre App"},
 
      *      summary="Supression du parametre",
      *      description="Supression d'un parametre'  donné",

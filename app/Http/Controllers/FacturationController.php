@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\FacturationResource;
+use App\Models\Facturation;
 use Illuminate\Http\Request;
 
 class FacturationController extends Controller
@@ -15,7 +17,7 @@ class FacturationController extends Controller
      * @OA\Get(
      *      path="/facturations",
      *      operationId="getAllFacture",
-     *      tags={"Facturation"},
+     *      tags={"Facturations"},
 
      *      summary="Retourne  la liste des facturations des service",
      *      description="Retourne toutes les facturations des services des applications",
@@ -46,7 +48,9 @@ class FacturationController extends Controller
      */
     public function index()
     {
-    
+        $facturation = Facturation::paginate(10);
+
+        return FacturationResource::collection($facturation);
     }
 
     /**
@@ -124,7 +128,23 @@ class FacturationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'type' => 'required|string',
+            'price' => 'required|integer',
+            'id_service' => 'required|integer',
+            'id_app' => 'required|integer',
+        ]);
+
+        $facturation = new Facturation();
+
+        $facturation->type = $request->type;
+        $facturation->price = $request->price;
+        $facturation->id_service = $request->id_service;
+        $facturation->id_app = $request->id_app;
+
+        $facturation->save();
+
+        return new FacturationResource($facturation);
     }
 
     /**
@@ -138,7 +158,7 @@ class FacturationController extends Controller
      * @OA\GET(
      *      path="/facturation/{id}",
      *      operationId="showFacturation",
-     *      tags={"Facturation"},
+     *      tags={"Facturations"},
 
      *      summary="Visualiser une Facturation",
      *      description="Permet de visualiser une facturation  donné",
@@ -177,7 +197,9 @@ class FacturationController extends Controller
      */
     public function show($id)
     {
-        //
+        $facturation = Facturation::findOrFail($id);
+
+        return new FacturationResource($facturation);
     }
 
     /**
@@ -263,7 +285,23 @@ class FacturationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'type' => 'required|string',
+            'price' => 'required|integer',
+            'id_service' => 'required|integer',
+            'id_app' => 'required|integer',
+        ]);
+
+        $facturation =  Facturation::failOrFail();
+
+        $facturation->type = $request->type;
+        $facturation->price = $request->price;
+        $facturation->id_service = $request->id_service;
+        $facturation->id_app = $request->id_app;
+
+        $facturation->save();
+
+        return new FacturationResource($facturation);
     }
 
     /**
@@ -316,6 +354,10 @@ class FacturationController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $facturation = Facturation::findOrFail($id);
+
+        $facturation->delete();
+
+        return new FacturationResource($facturation);
     }
 }
