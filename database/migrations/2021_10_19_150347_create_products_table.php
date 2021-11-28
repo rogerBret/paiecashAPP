@@ -20,6 +20,17 @@ class CreateProductsTable extends Migration
             $table->decimal("amount");
             $table->foreignId("user_id")->constrained()->onUpdate("cascade")->onDelete("cascade");
             $table->string("qrcode")->nullable();
+            $table->string('description');
+            $table->integer('discounte');
+            $table->integer('quantity');
+            $table->integer("'price");
+            $table->string('color');
+            $table->string('warranties');
+            $table->string('manuel');
+            $table->foreignId('brand_id')->constrained()->onUpdate("cascade");
+            $table->foreignId('category_id')->constrained()->onUpdate("cascade");
+            $table->string('code');
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

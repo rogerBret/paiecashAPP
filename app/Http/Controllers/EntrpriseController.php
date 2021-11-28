@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ProductResource;
-use App\Models\Product;
+use App\Http\Resources\EntrepriseResource;
+use App\Models\Entreprise;
 use Illuminate\Http\Request;
 
-class ProductController extends Controller
+class EntrpriseController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,12 +15,12 @@ class ProductController extends Controller
      */
     /**
      * @OA\Get(
-     *      path="/products",
-     *      operationId="getAllProducts",
+     *      path="/entreprises",
+     *      operationId="getAllEntreprises",
      *      tags={"Marketplace"},
 
-     *      summary="Retourne  la liste de produit",
-     *      description="Retourne toutes les produits disponible dans la bd",
+     *      summary="Retourne  la liste de entreprises ",
+     *      description="Retourne toutes les entreprise qui effectuent les promotion sur paiecash",
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -48,10 +48,9 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $user =  auth()->user()->id;
-        $product = Product::paginate(10)->where($user);
+        $entreprise = Entreprise::paginate(10);
 
-        return ProductResource::collection($product);
+        return EntrepriseResource::collection($entreprise);
     }
 
     /**
@@ -63,14 +62,14 @@ class ProductController extends Controller
     
       /**
      * @OA\POST(
-     *      path="/product",
-     *      operationId="createProduct",
+     *      path="/entreprise",
+     *      operationId="createEntreprise",
      *      tags={"Marketplace"},
 
-     *      summary="crée Produit",
-     *      description="Crée un nouveau produit par le partenaire",
-    *      @OA\Parameter(
-     *      name="name",
+     *      summary="crée une nouvelle entreprise",
+     *      description="Crée une entreprise ",
+     *      @OA\Parameter(
+     *      name="raisonSociale",
      *      in="path",
      *      required=true,
      *      @OA\Schema(
@@ -78,7 +77,7 @@ class ProductController extends Controller
      *      )
      *   ),
      * @OA\Parameter(
-     *      name="ammount",
+     *      name="longitude",
      *      in="path",
      *      required=true,
      *      @OA\Schema(
@@ -86,7 +85,7 @@ class ProductController extends Controller
      *      )
      * ),
      * @OA\Parameter(
-     *      name="description",
+     *      name="latitude",
      *      in="path",
      *      required=true,
      *      @OA\Schema(
@@ -94,7 +93,7 @@ class ProductController extends Controller
      *      )
      * ),
      * @OA\Parameter(
-     *      name="discounte",
+     *      name="city",
      *      in="path",
      *      required=true,
      *      @OA\Schema(
@@ -102,67 +101,35 @@ class ProductController extends Controller
      *      )
      * ),
      * @OA\Parameter(
-     *      name="quantity",
+     *      name="address1",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="email",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="phone",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="user_id",
      *      in="path",
      *      required=true,
      *      @OA\Schema(
      *           type="int"
-     *      )
-     * ),
-     * @OA\Parameter(
-     *      name="price",
-     *      in="path",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="int"
-     *      )
-     * ),
-     * @OA\Parameter(
-     *      name="color",
-     *      in="path",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="string"
-     *      )
-     * ),
-     * @OA\Parameter(
-     *      name="warranties",
-     *      in="path",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="string"
-     *      )
-     * ),
-     * @OA\Parameter(
-     *      name="manuel",
-     *      in="path",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="string"
-     *      )
-     * ),
-     * @OA\Parameter(
-     *      name="brand_id",
-     *      in="path",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="int"
-     *      )
-     * ),
-     * @OA\Parameter(
-     *      name="category_id",
-     *      in="path",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="int"
-     *      )
-     * ),
-     * @OA\Parameter(
-     *      name="image",
-     *      in="path",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="string"
      *      )
      * ),
      *      @OA\Response(
@@ -193,42 +160,34 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            "name"=>"required|string",
-            "amount"=>"required|numerique",
-            'description'=>"required|string",
-            'discounte' =>"required|string",
-            'quantity'=>"required|numerique",
-            'price'=>"required|numerique",
-            'color'=>"required|string",
-            'warranties' =>"required|sting",
-            'manuel'=>"required|sting",
-            'brand_id' =>"required|integer",
-            'category_id'=>"required|integer",
-            'image'=>"string",
+
+             'raisonSociale'=> "required|string", 
+            'longitude'=> "required|string", 
+            'latitude'=> "required|string", 
+            'city'=> "required|string", 
+            'address1'=> "required|string", 
+            'address2'=> "string", 
+            'email'=> "required|string", 
+            'phone'=> "required|string", 
+            'user_id'=> "required|integer"
         ]);
 
-        $product = new Product();
-        $product->name = $request->name;
-        $product->amount = $request->amount;
-        $product->amount = $request->description;
-        $product->amount = $request->discounte;
-        $product->amount = $request->quantity;
-        $product->amount = $request->price;
-        $product->amount = $request->color;
-        $product->amount = $request->warraties;
-        $product->amount = $request->manuel;
-        $product->amount = $request->brand_id;
-        $product->amount = $request->category_id;
-        $product->image = $request->image;
-        $product->code = mt_rand(1000,9999);
-        $product->qrcode = mt_rand(1000,9999);
+        $entreprise = new Entreprise();
 
-        $product->user_id = auth()->user()->id;
+        $entreprise->raisonSociale = $request->raisonSociale;
+        $entreprise->longitude = $request->longitude;
+        $entreprise->latitude = $request->latitude;
+        $entreprise->city = $request->city;
+        $entreprise->address1 = $request->address1;
+        $entreprise->address2 = $request->address2;
+        $entreprise->email = $request->email;
+        $entreprise->phone = $request->phone;
 
-        $product->save();
+        $entreprise->user_id = auth()->user()->id;
 
-        // return response()->json(["message"=>"product created successfully !"], 409);
-        return new ProductResource($product);
+        $entreprise->save();
+
+        return new EntrepriseResource($entreprise);
     }
 
     /**
@@ -239,12 +198,12 @@ class ProductController extends Controller
      */
      /**
      * @OA\GET(
-     *      path="/product/{id}",
-     *      operationId="showProduct",
+     *      path="/entreprise/{id}",
+     *      operationId="showEntreprise",
      *      tags={"Marketplace"},
 
-     *      summary="Visualiser Produit",
-     *      description="Permet de visualiser un produit",
+     *      summary="Visualiser Entreprise",
+     *      description="Permet de visualiser une entreprise  donné",
      *   @OA\Parameter(
      *      name="id",
      *      in="path",
@@ -280,9 +239,9 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $product= Product::findOrFail($id);
+        $entreprise = Entreprise::findOrFail($id);
 
-        return new ProductResource($product);
+        return new EntrepriseResource($entreprise);
     }
 
     /**
@@ -294,12 +253,12 @@ class ProductController extends Controller
      */
      /**
      * @OA\PUT(
-     *      path="/product/{id}",
-     *      operationId="updateProduct",
+     *      path="/entreprise/{id}",
+     *      operationId="updateEntreprise",
      *      tags={"Marketplace"},
 
-     *      summary="Mise à jour de produit ",
-     *      description="Mettre à jour un produit",
+     *      summary="Mettre à jour une entreprise",
+     *      description="Mettre à jour une entreprise",
     *      @OA\Parameter(
      *      name="id",
      *      in="path",
@@ -309,7 +268,7 @@ class ProductController extends Controller
      *      )
      *   ),
     *      @OA\Parameter(
-     *      name="name",
+     *      name="raisonSociale",
      *      in="path",
      *      required=true,
      *      @OA\Schema(
@@ -317,7 +276,7 @@ class ProductController extends Controller
      *      )
      *   ),
      * @OA\Parameter(
-     *      name="ammount",
+     *      name="longitude",
      *      in="path",
      *      required=true,
      *      @OA\Schema(
@@ -325,7 +284,7 @@ class ProductController extends Controller
      *      )
      * ),
      * @OA\Parameter(
-     *      name="description",
+     *      name="latitude",
      *      in="path",
      *      required=true,
      *      @OA\Schema(
@@ -333,7 +292,7 @@ class ProductController extends Controller
      *      )
      * ),
      * @OA\Parameter(
-     *      name="discounte",
+     *      name="city",
      *      in="path",
      *      required=true,
      *      @OA\Schema(
@@ -341,67 +300,35 @@ class ProductController extends Controller
      *      )
      * ),
      * @OA\Parameter(
-     *      name="quantity",
+     *      name="address1",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="email",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="phone",
+     *      in="path",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     * ),
+     * @OA\Parameter(
+     *      name="user_id",
      *      in="path",
      *      required=true,
      *      @OA\Schema(
      *           type="int"
-     *      )
-     * ),
-     * @OA\Parameter(
-     *      name="price",
-     *      in="path",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="int"
-     *      )
-     * ),
-     * @OA\Parameter(
-     *      name="color",
-     *      in="path",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="string"
-     *      )
-     * ),
-     * @OA\Parameter(
-     *      name="warranties",
-     *      in="path",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="string"
-     *      )
-     * ),
-     * @OA\Parameter(
-     *      name="manuel",
-     *      in="path",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="string"
-     *      )
-     * ),
-     * @OA\Parameter(
-     *      name="brand_id",
-     *      in="path",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="int"
-     *      )
-     * ),
-     * @OA\Parameter(
-     *      name="category_id",
-     *      in="path",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="int"
-     *      )
-     * ),
-     * @OA\Parameter(
-     *      name="image",
-     *      in="path",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="string"
      *      )
      * ),
      *      @OA\Response(
@@ -429,45 +356,38 @@ class ProductController extends Controller
      *   ),
      *  )
      */
+
     public function update(Request $request, $id)
     {
         $request->validate([
-            "name"=>"required|string",
-            "amount"=>"required|numerique",
-            'description'=>"required|string",
-            'discounte' =>"required|string",
-            'quantity'=>"required|numerique",
-            'price'=>"required|numerique",
-            'color'=>"required|string",
-            'warranties' =>"required|sting",
-            'manuel'=>"required|sting",
-            'brand_id' =>"required|integer",
-            'category_id'=>"required|integer",
-            'image'=>"string",
-        ]);
 
-        $product =  Product::findOrFail();
-        $product->name = $request->name;
-        $product->amount = $request->amount;
-        $product->amount = $request->description;
-        $product->amount = $request->discounte;
-        $product->amount = $request->quantity;
-        $product->amount = $request->price;
-        $product->amount = $request->color;
-        $product->amount = $request->warraties;
-        $product->amount = $request->manuel;
-        $product->amount = $request->brand_id;
-        $product->amount = $request->category_id;
-        $product->image = $request->image;
-        $product->code = mt_rand(1000,9999);
-        $product->qrcode = mt_rand(1000,9999);
+            'raisonSociale'=> "required|string", 
+           'longitude'=> "required|string", 
+           'latitude'=> "required|string", 
+           'city'=> "required|string", 
+           'address1'=> "required|string", 
+           'address2'=> "string", 
+           'email'=> "required|string", 
+           'phone'=> "required|string", 
+           'user_id'=> "required|integer"
+       ]);
 
-        $product->user_id = auth()->user()->id;
+       $entreprise =  Entreprise::findOrFail($id);
 
-        $product->save();
+       $entreprise->raisonSociale = $request->raisonSociale;
+       $entreprise->longitude = $request->longitude;
+       $entreprise->latitude = $request->latitude;
+       $entreprise->city = $request->city;
+       $entreprise->address1 = $request->address1;
+       $entreprise->address2 = $request->address2;
+       $entreprise->email = $request->email;
+       $entreprise->phone = $request->phone;
 
-        // return response()->json(["message"=>"product created successfully !"], 409);
-        return new ProductResource($product);
+       $entreprise->user_id = auth()->user()->id;
+
+       $entreprise->save();
+
+       return new EntrepriseResource($entreprise);
     }
 
     /**
@@ -478,12 +398,12 @@ class ProductController extends Controller
      */
      /**
      * @OA\DELETE(
-     *      path="/product/{id}",
-     *      operationId="deleteProduct",
+     *      path="/entreprise/{id}",
+     *      operationId="deleteEntreprise",
      *      tags={"Marketplace"},
 
-     *      summary="Supression d'un produit",
-     *      description="Supression d'un produit par l'utilisateur",
+     *      summary="Supression entreprise",
+     *      description="Supression d'une entreprise",
      *   @OA\Parameter(
      *      name="id",
      *      in="path",
@@ -519,59 +439,12 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        $product = Product::findOrFail($id);
+        $user =  auth()->user()->rememberToken;
+        $entreprise = Entreprise::findOrFail($id)->where($user)->get();
 
-        $product->delete();
+        
+       $entreprise->delete();
 
-        return new ProductResource($product);
-    }
-
- /**
-     * @OA\GET(
-     *      path="/product/{name}",
-     *      operationId="findProduct",
-     *      tags={"Marketplace"},
-
-     *      summary="Effectuer une recherche de produit",
-     *      description="Permet de retourner tous les produits qui ont un nom similaire au nom passé en paramètre",
-     *   @OA\Parameter(
-     *      name="name",
-     *      in="path",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="string"
-     *      )
-     *   ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *          @OA\MediaType(
-     *           mediaType="application/json",
-     *      )
-     *      ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden"
-     *      ),
-     * @OA\Response(
-     *      response=400,
-     *      description="Bad Request"
-     *   ),
-     * @OA\Response(
-     *      response=404,
-     *      description="not found"
-     *   ),
-     *  )
-     */
-
-    public function search($name)
-    {
-        $product= Product::where('name', 'like', '%'.$name.'%')->get();
-
-        return new ProductResource($product);
+        return new EntrepriseResource($entreprise);
     }
 }

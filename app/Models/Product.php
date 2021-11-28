@@ -11,6 +11,30 @@ class Product extends Model
 
     protected $fillable = [
         'name',
-        'amount'
+        'amount',
+        'qrcode',
+         'description',
+         'discounte',
+        'quantity',
+        'price',
+        'color',
+        'warranties',
+        'manuel',
+         'brand_id',
+         'category_id',
+       'code',
+        'image',
     ];
+
+    public function brand(){
+
+        return $this->belongsTo(Brande::class);
+
+    }
+
+    public function cateogry(){
+
+        return $this->belongsToMany(Categories::class);
+    }
+    
 }
