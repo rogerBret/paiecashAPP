@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Matches;
 use App\Http\Resources\MatchResource;
 use PhpParser\Node\Expr\Match_;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
+
 
 class MatchController extends Controller
 {
@@ -46,7 +48,7 @@ class MatchController extends Controller
     
     public function index()
     {
-        $allmatch = Matches::paginate();
+        $allmatch = Matches::paginate(10);
         return MatchResource::collection($allmatch);
     }
 
@@ -126,15 +128,19 @@ class MatchController extends Controller
      */
     public function store(Request $request)
     {
-        $match = new Matches();
-        $this->validate($request,[
+        
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
+       
 
             'type_match' =>'required|string',
             'equipe' =>'required|string',
             'date_match' =>'required|string',
             'heure_match' =>'required|string'
         ]);
-
+        if($validator){
+        $match = new Matches();
         $match->type_match = $request->type_match;
         $match->equipe = $request->equipe;
         $match->date_match = $request->date_match;
@@ -143,7 +149,7 @@ class MatchController extends Controller
         $match->save();
         
         return new MatchResource($match);
-
+        }
     }
 
     /**
@@ -195,7 +201,7 @@ class MatchController extends Controller
      */
     public function show($id)
     {
-        $match = Matches::findOrFail($id);
+        $match = Matches::find($id);
 
         return new MatchResource($match);
     }
@@ -285,24 +291,28 @@ class MatchController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $match =  Matches::findOrFail($id);
-        $this->validate($request,[
+       
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
+       
 
             'type_match' =>'required|string',
             'equipe' =>'required|string',
             'date_match' =>'required|string',
             'heure_match' =>'required|string'
         ]);
+        if($validator){
+             $match =  Matches::findOrFail($id);
+            $match->type_match = $request->type_match;
+            $match->equipe = $request->equipe;
+            $match->date_match = $request->date_match;
+            $match->heure_match = $request->heure_match;
 
-        $match->type_match = $request->type_match;
-        $match->equipe = $request->equipe;
-        $match->date_match = $request->date_match;
-        $match->heure_match = $request->heure_match;
-
-        $match->save();
-        
-        return new MatchResource($match);
-
+            $match->save();
+            
+            return new MatchResource($match);
+        }
     }
 
     /**
@@ -354,7 +364,7 @@ class MatchController extends Controller
      */
     public function destroy($id)
     {
-        $match = Matches::findOrFail($id);
+        $match = Matches::find($id);
 
         $match->delete();
         return redirect()->back();

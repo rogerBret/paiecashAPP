@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\CategoryResource;
 use App\Models\Categories;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
 
 class CategoryController extends Controller
 {
@@ -112,23 +113,25 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $input = $request->all();
 
+        $validator = FacadesValidator::make($input, [
             
             'libele' => "required|string",
             'image'=>"required|string",
            
         ]);
+        if($validator){
+            $commande = new Categories();
 
-        $commande = new Categories();
+            $commande->libele = $request->libele;
+            $commande->image = $request->image;
+            
 
-        $commande->libele = $request->libele;
-        $commande->image = $request->image;
-        
-
-        $commande->save();
-         
-        return new CategoryResource($commande);
+            $commande->save();
+            
+            return new CategoryResource($commande);
+        }
     }
 
     /**
@@ -180,7 +183,7 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        $commande = Categories::findOrFail($id);
+        $commande = Categories::find($id);
 
         return new CategoryResource($commande);
     }
@@ -252,22 +255,25 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
 
             
             'libele' => "required|string",
             'image'=>"required|string",
             
         ]);
+        if($validator){
+            $commande = Categories::findOrFail($id);
 
-        $commande = Categories::findOrFail($id);
-
-        $commande->libele = $request->libele;
-        $commande->image = $request->image;
-        
-        $commande->save();
-         
-        return new CategoryResource($commande);
+            $commande->libele = $request->libele;
+            $commande->image = $request->image;
+            
+            $commande->save();
+            
+            return new CategoryResource($commande);
+        }
     }
 
     /**
@@ -319,7 +325,7 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        $commande= Categories::findOrFail($id);
+        $commande= Categories::find($id);
 
         $commande->delete();
 

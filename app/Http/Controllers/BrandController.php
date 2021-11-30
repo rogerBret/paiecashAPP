@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\BrandResource;
 use App\Models\Brande;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
 
 class BrandController extends Controller
 {
@@ -120,25 +121,27 @@ class BrandController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $input = $request->all();
 
+        $validator = FacadesValidator::make($input, [
             
             'name' => "required|string",
             'description'=>"required|integer",
             'image'=>"required|integer",
             
         ]);
+        if($validator){
+            $brande = new Brande();
 
-        $brande = new Brande();
+            $brande->name = $request->name;
+            $brande->description = $request->description;
+            $brande->image = $request->image;
+            
 
-        $brande->name = $request->name;
-        $brande->description = $request->description;
-        $brande->image = $request->image;
-        
-
-        $brande->save();
-         
-        return new BrandResource($brande);
+            $brande->save();
+            
+            return new BrandResource($brande);
+        }
     }
 
     /**
@@ -190,7 +193,7 @@ class BrandController extends Controller
      */
     public function show($id)
     {
-        $brande = Brande::findOrFail($id);
+        $brande = Brande::find($id);
 
         return new BrandResource($brande);
     }
@@ -270,25 +273,27 @@ class BrandController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $input = $request->all();
 
+        $validator = FacadesValidator::make($input, [
             
             'name' => "required|string",
             'description'=>"required|integer",
             'image'=>"required|integer",
             
         ]);
+        if($validator){
+            $brande = Brande::find($id);
 
-        $brande = Brande::findOrFail($id);
+            $brande->name = $request->name;
+            $brande->description = $request->description;
+            $brande->image = $request->image;
+            
 
-        $brande->name = $request->name;
-        $brande->description = $request->description;
-        $brande->image = $request->image;
-        
-
-        $brande->save();
-         
-        return new BrandResource($brande);
+            $brande->save();
+            
+            return new BrandResource($brande);
+        }
     }
 
     /**
@@ -340,7 +345,7 @@ class BrandController extends Controller
      */
     public function destroy($id)
     {
-        $brande= Brande::findOrFail($id);
+        $brande= Brande::find($id);
 
         $brande->delete();
 

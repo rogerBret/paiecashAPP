@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Resources\StadeResource;
 use App\Models\Stade;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
 
 class StadeController extends Controller
 {
     /**
      * @OA\Get(
-     *      path="stades",
+     *      path="/stades",
      *      operationId="getAllStade",
      *      tags={"Stades"},
 
@@ -45,7 +46,7 @@ class StadeController extends Controller
     
     public function index()
     {
-        $stade = Stade::paginate();
+        $stade = Stade::paginate(10);
 
         return StadeResource::collection($stade);
     }
@@ -135,15 +136,18 @@ class StadeController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'name' => 'request|string',
-            'address' => 'request|string',
-            'longitude' => 'request|string',
-            'latitude' => 'request|string',
-            'capacity' => 'request|integer'
-        ]);
+        $input = $request->all();
 
-        $stade =  new Stade();
+        $validator = FacadesValidator::make($input, [
+            'name' => ['required','string'],
+            'address' => ['required','string'],
+            'longitude' => ['required','string'],
+            'latitude' => ['required','string'],
+            'capacity' => ['required']
+        ]);
+        
+        if($validator){
+            $stade = new Stade();
 
         $stade->name = $request->name;
         $stade->address = $request->address;
@@ -154,6 +158,8 @@ class StadeController extends Controller
         $stade->save();
 
         return new StadeResource($stade);
+        }
+        
     }
 
     /**
@@ -206,9 +212,9 @@ class StadeController extends Controller
      */
     public function show($id)
     {
-        $stade = Stade::findOrFail($id);
+        $stade = Stade::find($id);
 
-        return StadeResource::collection($stade);
+        return new StadeResource($stade);
     }
 
     /**
@@ -305,15 +311,18 @@ class StadeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
-            'name' => 'request|string',
-            'address' => 'request|string',
-            'longitude' => 'request|string',
-            'latitude' => 'request|string',
-            'capacity' => 'request|integer'
-        ]);
+        $input = $request->all();
 
-        $stade =  Stade::findOrFail($id);
+        $validator = FacadesValidator::make($input, [
+            'name' => ['required','string'],
+            'address' => ['required','string'],
+            'longitude' => ['required','string'],
+            'latitude' => ['required','string'],
+            'capacity' => ['required']
+        ]);
+        
+        if($validator){
+            $stade = Stade::find($id);
 
         $stade->name = $request->name;
         $stade->address = $request->address;
@@ -324,6 +333,7 @@ class StadeController extends Controller
         $stade->save();
 
         return new StadeResource($stade);
+        }
     }
 
     /**
@@ -375,7 +385,7 @@ class StadeController extends Controller
      */
     public function destroy($id)
     {
-        $stade =Stade::findOrFail($id);
+        $stade =Stade::find($id);
         $stade->delete();
 
         return new StadeResource($stade);

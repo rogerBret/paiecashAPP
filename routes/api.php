@@ -3,8 +3,12 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\CategoriesPlaceController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\CountryController;
+use App\Http\Controllers\EntrpriseController;
 use App\Http\Controllers\FacturationController;
+use App\Http\Controllers\FactureController;
 use App\Http\Controllers\MatchController;
 use App\Http\Controllers\PaiementModeController;
 use App\Http\Controllers\ParametreController;
@@ -124,7 +128,7 @@ Route::delete('/categories-place/{id}', [CategoriesPlaceController::class, "dest
 
 // ********************************Stade le crud corespondant ***************************//
 
-Route::get('/stades', [StadeController::class, "index"]);
+Route::get('stades', [StadeController::class, "index"]);
 Route::post('/stade', [StadeController::class, "store"]);
 Route::get('/stade/{id}', [StadeController::class, "show"]);
 Route::put('/stade/{id}', [StadeController::class, "update"]);
@@ -173,3 +177,36 @@ Route::post('facturation', [FacturationController::class, "store"]);
 Route::get('facturation/{id}', [FacturationController::class, "show"]);
 Route::put('facturation/{id}', [FacturationController::class, "update"]);
 Route::delete('facturation/{id}', [FacturationController::class, "destroy"]);
+
+/********************************* Marketplace **************************************** */
+
+Route::get('/entreprises', [EntrpriseController::class, "index"]);
+Route::post('/entreprise', [EntrpriseController::class, "store"]);
+Route::get('/entreprise/{id}', [EntrpriseController::class, "show"]);
+Route::put('/entreprise/{id}', [EntrpriseController::class, "update"]);
+Route::delete('/entreprise/{id}', [EntrpriseController::class, "destroy"]);
+
+Route::get('/factures', [FactureController::class, "index"]);
+Route::post('/facture', [FactureController::class, "store"]);
+Route::get('/facture/{id}', [FactureController::class, "show"]);
+Route::put('/facture/{id}', [FactureController::class, "update"]);
+Route::delete('/facture/{id}', [FactureController::class, "destroy"]);
+
+Route::get('/commandes', [CommandeController::class, "index"]);
+Route::post('/commande', [CommandeController::class, "store"]);
+Route::get('/commande/{id}', [CommandeController::class, "show"]);
+Route::put('/commande/{id}', [CommandeController::class, "update"]);
+Route::delete('/commande/{id}', [CommandeController::class, "destroy"]);
+
+Route::get('/categories', [CategoryController::class, "index"]);
+Route::post('/category', [CategoryController::class, "store"]);
+Route::get('/category/{id}', [CategoryController::class, "show"]);
+Route::put('/category/{id}', [CategoryController::class, "update"]);
+Route::delete('/category/{id}', [CategoryController::class, "destroy"]);
+
+Route::get('/products', [ProductController::class, "index"]);
+Route::post('/product', [ProductController::class, "store"]);
+Route::get('/product/{id}', [ProductController::class, "show"]);
+Route::put('/product/{id}', [ProductController::class, "update"]);
+Route::delete('/product/{id}', [ProductController::class, "destroy"]);
+Route::delete('/search/{name}', [ProductController::class, "search"]);

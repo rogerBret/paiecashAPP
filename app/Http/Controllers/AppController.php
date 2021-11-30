@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\AppResource;
 use App\Models\App;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Validator as FacadesValidator;
 class AppController extends Controller
 {
     /**
@@ -135,25 +135,28 @@ class AppController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
             'appName' => 'request|string',
             'userAccounte' => 'request|string',
             'costomersId' => 'request|string',
             'appSecreteCode' => 'request|string',
             'user_accounte_id' => 'request|string'
         ]);
+        if($validator){
+            $appli = new App();
 
-        $appli = new App();
+            $appli->appName = $request->appName;
+            $appli->userAccounte = $request->userAccounte;
+            $appli->costomersId = $request->costomersId;
+            $appli->appSecreteCode = $request->appSecreteCode;
+            $appli->user_accounte_id = $request->user_accounte_id;
 
-        $appli->appName = $request->appName;
-        $appli->userAccounte = $request->userAccounte;
-        $appli->costomersId = $request->costomersId;
-        $appli->appSecreteCode = $request->appSecreteCode;
-        $appli->user_accounte_id = $request->user_accounte_id;
+            $appli->save();
 
-        $appli->save();
-
-        return new AppResource($appli);
+            return new AppResource($appli);
+        }
     }
 
     /**
@@ -206,7 +209,7 @@ class AppController extends Controller
      */
     public function show($id)
     {
-        $appli = App::findOrFail($id);
+        $appli = App::find($id);
 
         return new AppResource($appli);
     }
@@ -301,25 +304,28 @@ class AppController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
             'appName' => 'request|string',
             'userAccounte' => 'request|string',
             'costomersId' => 'request|string',
             'appSecreteCode' => 'request|string',
             'user_accounte_id' => 'request|string'
         ]);
+        if($validator){
+            $appli = App::find($id);
 
-        $appli = App::findOrFail($id);
+            $appli->appName = $request->appName;
+            $appli->userAccounte = $request->userAccounte;
+            $appli->costomersId = $request->costomersId;
+            $appli->appSecreteCode = $request->appSecreteCode;
+            $appli->user_accounte_id = $request->user_accounte_id;
 
-        $appli->appName = $request->appName;
-        $appli->userAccounte = $request->userAccounte;
-        $appli->costomersId = $request->costomersId;
-        $appli->appSecreteCode = $request->appSecreteCode;
-        $appli->user_accounte_id = $request->user_accounte_id;
+            $appli->save();
 
-        $appli->save();
-
-        return new AppResource($appli);
+            return new AppResource($appli);
+        }
     }
 
     /**
@@ -372,7 +378,7 @@ class AppController extends Controller
      */
     public function destroy($id)
     {
-        $appli = App::findOrFail($id);
+        $appli = App::find($id);
         $appli->delete();
         return new AppResource($appli);
     }

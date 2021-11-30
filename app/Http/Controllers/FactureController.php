@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\FactureResource;
 use App\Models\Facture;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Validator as FacadesValidator;
 class FactureController extends Controller
 {
     /**
@@ -105,17 +105,21 @@ class FactureController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
+       
 
             'completPaiement' => "required|boolean"
         ]);
-
+        if($validator){
         $facture = new Facture();
 
         $facture->completPaiement = $request->completPaiement;
 
         $facture->save();
         return new FactureResource($facture);
+        }
     }
 
     /**
@@ -167,7 +171,7 @@ class FactureController extends Controller
      */
     public function show($id)
     {
-        $facture = Facture::findOrFail($id);
+        $facture = Facture::find($id);
 
         return new FactureResource($facture);
     }
@@ -231,17 +235,21 @@ class FactureController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
+       
 
             'completPaiement' => "required|boolean"
         ]);
-
-        $facture =  Facture::findOrFail($id);
+        if($validator){
+        $facture =  Facture::find($id);
 
         $facture->completPaiement = $request->completPaiement;
 
         $facture->save();
         return new FactureResource($facture);
+        }
     }
 
     /**
@@ -293,7 +301,7 @@ class FactureController extends Controller
      */
     public function destroy($id)
     {
-       $facture = Facture::findOrFail($id);
+       $facture = Facture::find($id);
        $facture->delete();
 
        return new FactureResource($facture);

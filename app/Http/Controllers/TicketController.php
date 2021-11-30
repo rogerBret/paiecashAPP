@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
 
 class TicketController extends Controller
 {
@@ -45,7 +46,7 @@ class TicketController extends Controller
    
     public function index()
     {
-        $ticket = Ticket::paginate();
+        $ticket = Ticket::paginate(10);
 
         return TicketResource::collection($ticket);
     }
@@ -142,7 +143,10 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
+         
             'type' => 'request|string',
             'price' => 'request|integer',
             'stade_id' => 'request|integer',
@@ -150,18 +154,22 @@ class TicketController extends Controller
             'match_id' => 'request|integer',
             'category_id' => 'request|integer'
         ]);
+        if($validator){
 
-        $ticket =  new Ticket();
+            $ticket =  new Ticket();
 
-        $ticket->name = $request->name;
-        $ticket->address = $request->address;
-        $ticket->longitude = $request->longitude;
-        $ticket->latitude = $request->latitude;
-        $ticket->capacity = $request->capacity;
-
-        $ticket->save();
-
-        return new TicketResource($ticket);
+            $ticket->type = $request->type;
+            $ticket->price = $request->price;
+            $ticket->stade_id = $request->stade_id;
+            $ticket->place_id = $request->place_id;
+            $ticket->match_id = $request->match_id;
+            $ticket->category_id = $request->category_id;
+    
+            $ticket->save();
+    
+            return new TicketResource($ticket);
+        }
+        
     }
 
     /**
@@ -213,7 +221,7 @@ class TicketController extends Controller
      */
     public function show($id)
     {
-        $ticket = Ticket::findOrFail($id);
+        $ticket = Ticket::find($id);
 
         return TicketResource::collection($ticket);
     }
@@ -319,7 +327,10 @@ class TicketController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
+         
             'type' => 'request|string',
             'price' => 'request|integer',
             'stade_id' => 'request|integer',
@@ -327,18 +338,21 @@ class TicketController extends Controller
             'match_id' => 'request|integer',
             'category_id' => 'request|integer'
         ]);
+        if($validator){
 
-        $ticket =  Ticket::findOrFail($id);
+            $ticket =  Ticket::find($id);
 
-        $ticket->name = $request->name;
-        $ticket->address = $request->address;
-        $ticket->longitude = $request->longitude;
-        $ticket->latitude = $request->latitude;
-        $ticket->capacity = $request->capacity;
-
-        $ticket->save();
-
-        return new TicketResource($ticket);
+            $ticket->type = $request->type;
+            $ticket->price = $request->price;
+            $ticket->stade_id = $request->stade_id;
+            $ticket->place_id = $request->place_id;
+            $ticket->match_id = $request->match_id;
+            $ticket->category_id = $request->category_id;
+    
+            $ticket->save();
+    
+            return new TicketResource($ticket);
+        }
     }
 
     /**
@@ -390,7 +404,7 @@ class TicketController extends Controller
      */
     public function destroy($id)
     {
-        $ticket =Ticket::findOrFail($id);
+        $ticket =Ticket::find($id);
         $ticket->delete();
 
         return new TicketResource($ticket);

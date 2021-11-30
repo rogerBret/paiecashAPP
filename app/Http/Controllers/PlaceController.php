@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\PlaceResource;
 use App\Models\Place;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
 
 class PlaceController extends Controller
 {   
@@ -56,7 +57,7 @@ class PlaceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-/**
+    /**
      * @OA\POST(
      *      path="/place",
      *      operationId="createCategoriesSeat",
@@ -134,7 +135,9 @@ class PlaceController extends Controller
 
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
             'rowNumber' => 'request|string',
             'seatNumber' => 'request|string',
             'gateNumber' => 'request|string',
@@ -142,17 +145,19 @@ class PlaceController extends Controller
             'stade_id' => 'request|string'
         ]);
 
-        $place = new Place();
+        if($validator){
+            $place = new Place();
 
-        $place->rowNumber = $request->rowNumber;
-        $place->seatNumber = $request->seatNumber;
-        $place->gateNumber = $request->gateNumber;
-        $place->section = $request->section;
-        $place->stade_id = $request->stade_id;
+            $place->rowNumber = $request->rowNumber;
+            $place->seatNumber = $request->seatNumber;
+            $place->gateNumber = $request->gateNumber;
+            $place->section = $request->section;
+            $place->stade_id = $request->stade_id;
 
-        $place->save();
+            $place->save();
 
-        return new PlaceResource($place);
+            return new PlaceResource($place);
+        }
     }
 
     /**
@@ -204,9 +209,9 @@ class PlaceController extends Controller
      */
     public function show($id)
     {
-        $place = Place::findOrFail($id);
+        $place = Place::find($id);
 
-        return PlaceResource::collection($place);
+        return new PlaceResource($place);
     }
 
     /**
@@ -300,15 +305,17 @@ class PlaceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
             'rowNumber' => 'request|string',
             'seatNumber' => 'request|string',
             'gateNumber' => 'request|string',
             'section' => 'request|string',
             'stade_id' => 'request|string'
         ]);
-
-        $place =  Place::findOrFail($id);
+        if($validator){
+        $place =  Place::find($id);
 
         $place->rowNumber = $request->rowNumber;
         $place->seatNumber = $request->seatNumber;
@@ -319,6 +326,7 @@ class PlaceController extends Controller
         $place->save();
 
         return new PlaceResource($place);
+        }
     
     }
 
@@ -371,7 +379,7 @@ class PlaceController extends Controller
      */
     public function destroy($id)
     {
-        $place =Place::findOrFail($id);
+        $place =Place::find($id);
         $place->delete();
 
         return new PlaceResource($place);

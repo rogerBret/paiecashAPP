@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\CommandeResource;
 use App\Models\Commande;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
 
 class CommandeController extends Controller
 {
@@ -135,7 +136,10 @@ class CommandeController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
+
 
             
             'isDelived' => "required",
@@ -144,18 +148,19 @@ class CommandeController extends Controller
             'dateCommande' =>"required|string",
             'numeroCommande' => "'required|string",
         ]);
+        if($validator){
+            $commande = new Commande();
 
-        $commande = new Commande();
+            $commande->isDelived = $request->isDelived;
+            $commande->quantities = $request->quantities;
+            $commande->taxe = $request->taxe;
+            $commande->dateCommande = $request->dateCommande;
+            $commande->numeroCommande = $request->numeroCommande;
 
-        $commande->isDelived = $request->isDelived;
-        $commande->quantities = $request->quantities;
-        $commande->taxe = $request->taxe;
-        $commande->dateCommande = $request->dateCommande;
-        $commande->numeroCommande = $request->numeroCommande;
-
-        $commande->save();
-         
-        return new CommandeResource($commande);
+            $commande->save();
+            
+            return new CommandeResource($commande);
+        }
     }
 
     /**
@@ -207,7 +212,7 @@ class CommandeController extends Controller
      */
     public function show($id)
     {
-        $commande = Commande::findOrFail($id);
+        $commande = Commande::find($id);
 
         return new CommandeResource($commande);
     }
@@ -302,27 +307,29 @@ class CommandeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $input = $request->all();
 
-            
+        $validator = FacadesValidator::make($input, [
+
             'isDelived' => "required",
             'quantities'=>"required|integer",
             'taxe'=>"required|integer",
             'dateCommande' =>"required|string",
             'numeroCommande' => "'required|string",
         ]);
+        if($validator){
+            $commande = Commande::find($id);
 
-        $commande = Commande::findOrFail($id);
+            $commande->isDelived = $request->isDelived;
+            $commande->quantities = $request->quantities;
+            $commande->taxe = $request->taxe;
+            $commande->dateCommande = $request->dateCommande;
+            $commande->numeroCommande = $request->numeroCommande;
 
-        $commande->isDelived = $request->isDelived;
-        $commande->quantities = $request->quantities;
-        $commande->taxe = $request->taxe;
-        $commande->dateCommande = $request->dateCommande;
-        $commande->numeroCommande = $request->numeroCommande;
-
-        $commande->save();
-         
-        return new CommandeResource($commande);
+            $commande->save();
+            
+            return new CommandeResource($commande);
+        }
     }
 
     /**
@@ -374,7 +381,7 @@ class CommandeController extends Controller
      */
     public function destroy($id)
     {
-        $commande= Commande::findOrFail($id);
+        $commande= Commande::find($id);
 
         $commande->delete();
 

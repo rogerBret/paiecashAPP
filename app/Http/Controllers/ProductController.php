@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
 
 class ProductController extends Controller
 {
@@ -192,7 +193,10 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
+         
             "name"=>"required|string",
             "amount"=>"required|numerique",
             'description'=>"required|string",
@@ -206,7 +210,7 @@ class ProductController extends Controller
             'category_id'=>"required|integer",
             'image'=>"string",
         ]);
-
+        if($validator){
         $product = new Product();
         $product->name = $request->name;
         $product->amount = $request->amount;
@@ -229,6 +233,7 @@ class ProductController extends Controller
 
         // return response()->json(["message"=>"product created successfully !"], 409);
         return new ProductResource($product);
+        }
     }
 
     /**
@@ -280,7 +285,7 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $product= Product::findOrFail($id);
+        $product= Product::find($id);
 
         return new ProductResource($product);
     }
@@ -431,7 +436,10 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
+         
             "name"=>"required|string",
             "amount"=>"required|numerique",
             'description'=>"required|string",
@@ -445,8 +453,8 @@ class ProductController extends Controller
             'category_id'=>"required|integer",
             'image'=>"string",
         ]);
-
-        $product =  Product::findOrFail();
+        if($validator){
+        $product =  Product::find($id);
         $product->name = $request->name;
         $product->amount = $request->amount;
         $product->amount = $request->description;
@@ -468,6 +476,7 @@ class ProductController extends Controller
 
         // return response()->json(["message"=>"product created successfully !"], 409);
         return new ProductResource($product);
+        }
     }
 
     /**
@@ -519,7 +528,7 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::find($id);
 
         $product->delete();
 

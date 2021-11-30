@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Resources\PaiementmodeResource;
 use App\Models\PaiementMode;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
+
 
 class PaiementModeController extends Controller
 {
@@ -120,12 +122,14 @@ class PaiementModeController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
             'singlePaiement' => 'request|string',
             'paiementGroup' => 'request|string',
             'id_parameter' => 'request|integer',
         ]);
-
+        if($validator){
         $paiementM = new PaiementMode();
 
         $paiementM->singlePaiement = $request->singlePaiement;
@@ -135,6 +139,7 @@ class PaiementModeController extends Controller
         $paiementM->save();
 
         return new PaiementmodeResource($paiementM);
+        }
     }
 
     /**
@@ -187,7 +192,7 @@ class PaiementModeController extends Controller
      */
     public function show($id)
     {
-        $paiementM = PaiementMode::findOrFail($id);
+        $paiementM = PaiementMode::find($id);
 
         return new PaiementmodeResource($paiementM);
     }
@@ -267,21 +272,25 @@ class PaiementModeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
             'singlePaiement' => 'request|string',
             'paiementGroup' => 'request|string',
             'id_parameter' => 'request|integer',
         ]);
+            if($validator){
 
-        $paiementM =  PaiementMode::findOrFail($id);
+            $paiementM =  PaiementMode::find($id);
 
-        $paiementM->singlePaiement = $request->singlePaiement;
-        $paiementM->paiementGroup = $request->paiementGroup;
-        $paiementM->id_parametrer = $request->id_parameter;
+            $paiementM->singlePaiement = $request->singlePaiement;
+            $paiementM->paiementGroup = $request->paiementGroup;
+            $paiementM->id_parametrer = $request->id_parameter;
 
-        $paiementM->save();
+            $paiementM->save();
 
-        return new PaiementmodeResource($paiementM);
+            return new PaiementmodeResource($paiementM);
+        }
     }
 
     /**
@@ -334,7 +343,7 @@ class PaiementModeController extends Controller
      */
     public function destroy($id)
     {
-       $paiementM = PaiementMode::findOrFail($id);
+       $paiementM = PaiementMode::find($id);
 
        return new PaiementmodeResource($paiementM);
     }

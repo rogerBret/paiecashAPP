@@ -6,6 +6,7 @@ use App\Http\Resources\ServiceResource;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use OpenApi\Annotations\Server;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
 
 class ServiceController extends Controller
 {
@@ -129,23 +130,27 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
             'serviceName' => 'required|string',
             'facturation' => 'required|string',
             'price' => 'required|integer',
             'id_app' => 'required|integer',
         ]);
+        if($validator){
+            $service = new Service();
 
-        $service = new Service();
+            $service->seviceName = $request->serviceName;
+            $service->facturation = $request->facturation;
+            $service->price = $request->price;
+            $service->id_app = $request->id_app;
 
-        $service->seviceName = $request->serviceName;
-        $service->facturation = $request->facturation;
-        $service->price = $request->price;
-        $service->id_app = $request->id_app;
+            $service->save();
 
-        $service->save();
-
-        return new ServiceResource($service);
+            return new ServiceResource($service);
+        }
+        
     }
 
     /**
@@ -287,23 +292,26 @@ class ServiceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
             'serviceName' => 'required|string',
             'facturation' => 'required|string',
             'price' => 'required|integer',
             'id_app' => 'required|integer',
         ]);
+        if($validator){
+            $service =  Service::find();
 
-        $service =  Service::findOrFail($id);
+            $service->seviceName = $request->serviceName;
+            $service->facturation = $request->facturation;
+            $service->price = $request->price;
+            $service->id_app = $request->id_app;
 
-        $service->seviceName = $request->serviceName;
-        $service->facturation = $request->facturation;
-        $service->price = $request->price;
-        $service->id_app = $request->id_app;
+            $service->save();
 
-        $service->save();
-
-        return new ServiceResource($service);
+            return new ServiceResource($service);
+        }
     }
 
     /**
@@ -356,7 +364,7 @@ class ServiceController extends Controller
      */
     public function destroy($id)
     {
-        $service = Service::findOrFail($id);
+        $service = Service::find($id);
 
         $service->delete();
 
