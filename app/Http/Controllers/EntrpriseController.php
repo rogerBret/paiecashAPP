@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\EntrepriseResource;
 use App\Models\Entreprise;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Validator as FacadesValidator;
 class EntrpriseController extends Controller
 {
     /**
@@ -159,7 +159,9 @@ class EntrpriseController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
 
              'raisonSociale'=> "required|string", 
             'longitude'=> "required|string", 
@@ -171,23 +173,24 @@ class EntrpriseController extends Controller
             'phone'=> "required|string", 
             'user_id'=> "required|integer"
         ]);
+        if($validator){
+            $entreprise = new Entreprise();
 
-        $entreprise = new Entreprise();
+            $entreprise->raisonSociale = $request->raisonSociale;
+            $entreprise->longitude = $request->longitude;
+            $entreprise->latitude = $request->latitude;
+            $entreprise->city = $request->city;
+            $entreprise->address1 = $request->address1;
+            $entreprise->address2 = $request->address2;
+            $entreprise->email = $request->email;
+            $entreprise->phone = $request->phone;
 
-        $entreprise->raisonSociale = $request->raisonSociale;
-        $entreprise->longitude = $request->longitude;
-        $entreprise->latitude = $request->latitude;
-        $entreprise->city = $request->city;
-        $entreprise->address1 = $request->address1;
-        $entreprise->address2 = $request->address2;
-        $entreprise->email = $request->email;
-        $entreprise->phone = $request->phone;
+            $entreprise->user_id = auth()->user()->id;
 
-        $entreprise->user_id = auth()->user()->id;
+            $entreprise->save();
 
-        $entreprise->save();
-
-        return new EntrepriseResource($entreprise);
+            return new EntrepriseResource($entreprise);
+        }
     }
 
     /**
@@ -239,7 +242,7 @@ class EntrpriseController extends Controller
      */
     public function show($id)
     {
-        $entreprise = Entreprise::findOrFail($id);
+        $entreprise = Entreprise::find($id);
 
         return new EntrepriseResource($entreprise);
     }
@@ -359,7 +362,9 @@ class EntrpriseController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
 
             'raisonSociale'=> "required|string", 
            'longitude'=> "required|string", 
@@ -371,8 +376,8 @@ class EntrpriseController extends Controller
            'phone'=> "required|string", 
            'user_id'=> "required|integer"
        ]);
-
-       $entreprise =  Entreprise::findOrFail($id);
+       if($validator){
+       $entreprise =  Entreprise::find($id);
 
        $entreprise->raisonSociale = $request->raisonSociale;
        $entreprise->longitude = $request->longitude;
@@ -388,6 +393,7 @@ class EntrpriseController extends Controller
        $entreprise->save();
 
        return new EntrepriseResource($entreprise);
+       }
     }
 
     /**
@@ -440,7 +446,7 @@ class EntrpriseController extends Controller
     public function destroy($id)
     {
         $user =  auth()->user()->rememberToken;
-        $entreprise = Entreprise::findOrFail($id)->where($user)->get();
+        $entreprise = Entreprise::find($id)->where($user)->get();
 
         
        $entreprise->delete();

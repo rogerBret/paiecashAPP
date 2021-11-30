@@ -115,7 +115,7 @@ class CategoriesPlaceController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $request->validate([
             'name' => 'request|string',
             'stade_id' => 'request|integer',
             'place_id' => 'request|integer'
@@ -261,7 +261,7 @@ class CategoriesPlaceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $request->validate([
             'name' => 'request|string',
             'stade_id' => 'request|integer',
             'place_id' => 'request|integer'

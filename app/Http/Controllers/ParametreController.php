@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ParametreResource;
 use App\Models\Parametre;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
+
 
 class ParametreController extends Controller
 {
@@ -168,7 +170,9 @@ class ParametreController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
             'urlReturn' => 'required',
             'acceptePaiement' => 'required',
             'billing' => 'required',
@@ -179,7 +183,7 @@ class ParametreController extends Controller
             'id_app' => 'required',
             'id_service' => 'required',
         ]);
-
+        if($validator){
         $parametre = new Parametre();
         $parametre->urlReturn = $request->urlReturn;
         $parametre->acceptePaiement = $request->acceptePaiement;
@@ -194,6 +198,7 @@ class ParametreController extends Controller
         $parametre->save();
 
         return new ParametreResource($parametre);
+     }
 
     }
 
@@ -247,7 +252,7 @@ class ParametreController extends Controller
      */
     public function show($id)
     {
-        $parametre= Parametre::findOrFail($id);
+        $parametre= Parametre::find($id);
 
         return new ParametreResource($parametre);
     }
@@ -374,7 +379,9 @@ class ParametreController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
             'urlReturn' => 'required',
             'acceptePaiement' => 'required',
             'billing' => 'required',
@@ -385,21 +392,23 @@ class ParametreController extends Controller
             'id_app' => 'required',
             'id_service' => 'required',
         ]);
+        if($validator)
+        {
+            $parametre =  Parametre::find($id);
+            $parametre->urlReturn = $request->urlReturn;
+            $parametre->acceptePaiement = $request->acceptePaiement;
+            $parametre->billing = $request->billing;
+            $parametre->litigeManagement = $request->litigeManagement;
+            $parametre->paiementCard = $request->paiementCard;
+            $parametre->paiementHistry = $request->paiementHistry;
+            $parametre->id_paiement_mode = $request->id_paiement_mode;
+            $parametre->id_app = $request->id_app;
+            $parametre->id_service = $request->id_service;
 
-        $parametre =  Parametre::findOrFail($id);
-        $parametre->urlReturn = $request->urlReturn;
-        $parametre->acceptePaiement = $request->acceptePaiement;
-        $parametre->billing = $request->billing;
-        $parametre->litigeManagement = $request->litigeManagement;
-        $parametre->paiementCard = $request->paiementCard;
-        $parametre->paiementHistry = $request->paiementHistry;
-        $parametre->id_paiement_mode = $request->id_paiement_mode;
-        $parametre->id_app = $request->id_app;
-        $parametre->id_service = $request->id_service;
+            $parametre->save();
 
-        $parametre->save();
-
-        return new ParametreResource($parametre);
+            return new ParametreResource($parametre);
+        }
     }
 
     /**
@@ -452,7 +461,7 @@ class ParametreController extends Controller
      */
     public function destroy($id)
     {
-        $parametre = Parametre::findOrFail($id);
+        $parametre = Parametre::find($id);
 
         $parametre->delete();
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\FacturationResource;
 use App\Models\Facturation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
 
 class FacturationController extends Controller
 {
@@ -48,7 +49,8 @@ class FacturationController extends Controller
      */
     public function index()
     {
-        $facturation = Facturation::paginate(10);
+        $user =  auth()->user()->id;
+        $facturation = Facturation::paginate(10)->where($user);
 
         return FacturationResource::collection($facturation);
     }
@@ -128,23 +130,27 @@ class FacturationController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
             'type' => 'required|string',
             'price' => 'required|integer',
             'id_service' => 'required|integer',
             'id_app' => 'required|integer',
         ]);
 
-        $facturation = new Facturation();
+        if($validator){
+            $facturation = new Facturation();
 
-        $facturation->type = $request->type;
-        $facturation->price = $request->price;
-        $facturation->id_service = $request->id_service;
-        $facturation->id_app = $request->id_app;
+            $facturation->type = $request->type;
+            $facturation->price = $request->price;
+            $facturation->id_service = $request->id_service;
+            $facturation->id_app = $request->id_app;
 
-        $facturation->save();
+            $facturation->save();
 
-        return new FacturationResource($facturation);
+            return new FacturationResource($facturation);
+        }
     }
 
     /**
@@ -197,7 +203,7 @@ class FacturationController extends Controller
      */
     public function show($id)
     {
-        $facturation = Facturation::findOrFail($id);
+        $facturation = Facturation::find($id);
 
         return new FacturationResource($facturation);
     }
@@ -285,14 +291,17 @@ class FacturationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
+        $input = $request->all();
+
+        $validator = FacadesValidator::make($input, [
             'type' => 'required|string',
             'price' => 'required|integer',
             'id_service' => 'required|integer',
             'id_app' => 'required|integer',
         ]);
 
-        $facturation =  Facturation::failOrFail();
+        if($validator){
+        $facturation =  Facturation::fail();
 
         $facturation->type = $request->type;
         $facturation->price = $request->price;
@@ -302,6 +311,7 @@ class FacturationController extends Controller
         $facturation->save();
 
         return new FacturationResource($facturation);
+        }
     }
 
     /**
@@ -354,7 +364,7 @@ class FacturationController extends Controller
      */
     public function destroy($id)
     {
-        $facturation = Facturation::findOrFail($id);
+        $facturation = Facturation::find($id);
 
         $facturation->delete();
 
